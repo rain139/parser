@@ -48,7 +48,7 @@ class Parser(object):
             else:
                 html = urlopen(self.site_url)
         except:
-            if self.__url and self.__url_tmp:
+            if self.__url_tmp:
                 self.__open_href_and_set()
             else:
                 print('\033[91m Base url error!  \033[0m')
@@ -98,3 +98,4 @@ class Parser(object):
     def run(self) -> None:
         self.__open_href_and_set()
         print('Success Parsing!! `{table}`'.format(table=self._table))
+
