@@ -6,13 +6,13 @@ import re
 class EmailParser(Parser):
     __email = []
 
-    def _action(self, cursor, soup: BeautifulSoup):
+    def _action(self, cursor, soup: BeautifulSoup) -> None:
         tmp_email = self.__search_email(soup.findAll())
 
         if tmp_email:
             self.__save_bd(tmp_email, cursor)
 
-    def __search_email(self, html):
+    def __search_email(self, html: BeautifulSoup) -> list:
         tmp_email = []
 
         for tag in html:
@@ -31,7 +31,7 @@ class EmailParser(Parser):
                         tmp_email.append(email_with_mailto)
         return tmp_email
 
-    def __save_bd(self, emails, cursor):
+    def __save_bd(self, emails: list, cursor) -> None:
         print("save {count} emails".format(count=emails.__len__()))
         sql = "INSERT INTO `{table}` (`email`) VALUES ".format(table=self._table)
         values = ''
@@ -39,4 +39,7 @@ class EmailParser(Parser):
             values = '(%s),'
 
         sql += values.strip(',')
-        cursor.execute(sql, emails)
+        try:
+            cursor.execute(sql, emails)
+        except:
+            print('\033[91m Error save sql: {sql} \033[0m'.format(count=emails.__len__(), sql=sql))

@@ -1,6 +1,9 @@
 from src.Parsers.EmailParser import EmailParser
 from src.services.db import db
-import re
+import sys
 
 
-EmailParser('https://ksena.com.ua/contacts','ksena').run()
+sys.setrecursionlimit(100000)
+
+
+EmailParser('https://anje.com.ua','anje').run()

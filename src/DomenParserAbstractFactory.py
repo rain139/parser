@@ -23,7 +23,7 @@ class Parser(object):
     def _create_table(self):
         cursor = db().connect().cursor()
         try:
-            cursor.execute("CREATE TABLE IF 2NOT EXISTS  `{table}`"
+            cursor.execute("CREATE TABLE IF NOT EXISTS  `{table}`"
                        "( `id` INT NOT NULL AUTO_INCREMENT ,"
                        " `email` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,"
                        " PRIMARY KEY (`id`)) ENGINE = InnoDB;".format(table=self._table))
@@ -41,7 +41,7 @@ class Parser(object):
             if self.__url and self.__url_tmp:
                 self.__open_href_and_set()
             else:
-                print('Base url error!')
+                print('\033[91m Base url error!  \033[0m')
                 exit()
 
         soup = BeautifulSoup(html, features='html.parser')
@@ -53,7 +53,7 @@ class Parser(object):
         cursor = db().connect().cursor()
 
         for tag in all_tag_a:
-            href = tag.get('href')
+            href = str(tag.get('href'))
 
             if re.search('http|wwww', href) and href.find(self.site_url) == -1:
                 continue
@@ -68,8 +68,8 @@ class Parser(object):
                 self._action(cursor, soup)
 
         db().connect().commit()
-        exit()
-        if all_tag_a:
+
+        if self.__url_tmp:
             self.__open_href_and_set()
 
     @abc.abstractmethod
@@ -79,3 +79,4 @@ class Parser(object):
 
     def run(self) -> None:
         self.__open_href_and_set()
+        print('Success Parsing!! `{table}`'.format(table=self._table))
