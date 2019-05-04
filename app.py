@@ -1,5 +1,6 @@
-from scr.Parsers.TitleParser import TitleParser
-from scr.db import db
+from src.Parsers.EmailParser import EmailParser
+from src.services.db import db
+import re
 
 
-TitleParser('http://ksena.com.ua').run()
+EmailParser('https://ksena.com.ua/contacts','ksena').run()

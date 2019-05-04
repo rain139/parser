@@ -1,6 +1,5 @@
-from scr.ParserAbstractFactory import Parser
+from src.ParserAbstractFactory import Parser
 from bs4 import BeautifulSoup
-from scr.db import db
 
 
 class TitleParser(Parser):
