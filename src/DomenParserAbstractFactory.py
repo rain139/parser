@@ -52,7 +52,7 @@ class Parser(object):
                 self.__open_href_and_set()
             else:
                 print('\033[91m Base url error!  \033[0m')
-                exit()
+
         if html:
             soup = BeautifulSoup(html, features='html.parser')
             if self._special_link:
