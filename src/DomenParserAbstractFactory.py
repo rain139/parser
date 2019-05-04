@@ -85,6 +85,7 @@ class Parser(object):
                             cursor.execute("INSERT INTO `links` (`name`) VALUES (%s)", [href])
                         except:
                             print('Error insert links')
+            cursor.close()
             db().connect().commit()
 
         if self.__url_tmp:

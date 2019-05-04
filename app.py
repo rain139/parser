@@ -1,6 +1,7 @@
 from src.Parsers.EmailParser import EmailParser
 from src.services.db import db
 import sys
+from src.services.helpers import *
 
 sys.setrecursionlimit(100000)
 
@@ -8,6 +9,18 @@ count = len(sys.argv)
 
 if count > 1:
     domen = sys.argv[1]
+    if domen.find('--bd') > -1:
+        result = get_sites()
+        if result:
+            for arg in result:
+                config = {}
+                if arg['special_link']:
+                    config['special_link'] = arg['special_link']
+                EmailParser(arg['site'], arg['tb'], **config).run()
+                set_success_parse(arg['site'])
+        else:
+            exit('db rows 0')
+        exit()
 else:
     exit("Error not find arg DOMEN")
 

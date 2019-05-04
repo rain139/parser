@@ -8,9 +8,9 @@ class EmailParser(Parser):
 
     def _action(self, cursor, soup: BeautifulSoup) -> None:
         tmp_email = self.__search_email(soup.findAll())
-
         if tmp_email:
             self.__save_bd(tmp_email, cursor)
+        cursor.close()
 
     def __search_email(self, html: BeautifulSoup) -> list:
         tmp_email = []
