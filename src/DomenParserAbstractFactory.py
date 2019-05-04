@@ -41,6 +41,7 @@ class Parser(object):
             exit('\n \033[91m Error create table `{table}` \033[0m \n'.format(table=self._table))
 
     def __open_href_and_set(self) -> None:
+        html = None
         try:
             if self.__url and self.__url_tmp:
                 html = urlopen(self.__url_tmp.pop())
@@ -52,39 +53,39 @@ class Parser(object):
             else:
                 print('\033[91m Base url error!  \033[0m')
                 exit()
+        if html:
+            soup = BeautifulSoup(html, features='html.parser')
+            if self._special_link:
+                all_tag_a = list(set(soup.findAll('a', href=re.compile("^(/{href}/)".format(href=self._special_link)))))
+            else:
+                all_tag_a = list(set(soup.findAll('a')))
 
-        soup = BeautifulSoup(html, features='html.parser')
-        if self._special_link:
-            all_tag_a = list(set(soup.findAll('a', href=re.compile("^(/{href}/)".format(href=self._special_link)))))
-        else:
-            all_tag_a = list(set(soup.findAll('a')))
+            print('tmp_link = {tmp_link} all_link: {all_link}'.format(tmp_link=self.__url_tmp.__len__(),
+                                                                      all_link=self.__url.__len__()))
 
-        print('tmp_link = {tmp_link} all_link: {all_link}'.format(tmp_link=self.__url_tmp.__len__(),
-                                                                  all_link=self.__url.__len__()))
+            cursor = db().connect().cursor()
 
-        cursor = db().connect().cursor()
+            for tag in all_tag_a:
+                href = str(tag.get('href'))
 
-        for tag in all_tag_a:
-            href = str(tag.get('href'))
+                if re.search('http|wwww', href) and href.find(self.site_url) == -1:
+                    continue
 
-            if re.search('http|wwww', href) and href.find(self.site_url) == -1:
-                continue
+                if href.find(self.site_url) == -1:
+                    href = self.site_url + '/' + href.strip('/')
 
-            if href.find(self.site_url) == -1:
-                href = self.site_url + '/' + href.strip('/')
+                if href not in self.__url and href != '/' \
+                        and not re.search('(jpg|png|pdf|gif|jpeg|svg|txt|#|None)', href, re.IGNORECASE):
+                    self.__url.append(href)
+                    self.__url_tmp.append(href)
+                    self._action(cursor, soup)
 
-            if href not in self.__url and href != '/' \
-                    and not re.search('(jpg|png|pdf|gif|jpeg|svg|txt|#|None)', href, re.IGNORECASE):
-                self.__url.append(href)
-                self.__url_tmp.append(href)
-                self._action(cursor, soup)
-
-                if self._save_link:
-                    try:
-                        cursor.execute("INSERT INTO `links` (`name`) VALUES (%s)", [href])
-                    except:
-                        print('Error insert links')
-        db().connect().commit()
+                    if self._save_link:
+                        try:
+                            cursor.execute("INSERT INTO `links` (`name`) VALUES (%s)", [href])
+                        except:
+                            print('Error insert links')
+            db().connect().commit()
 
         if self.__url_tmp:
             self.__open_href_and_set()
