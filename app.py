@@ -17,7 +17,7 @@ if count > 1:
                 if arg['special_link']:
                     config['special_link'] = arg['special_link']
                 EmailParser(arg['site'], arg['tb'], **config).run()
-                set_success_parse(arg['site'])
+                set_success_parse(arg['id'])
         else:
             exit('db rows 0')
         exit()
