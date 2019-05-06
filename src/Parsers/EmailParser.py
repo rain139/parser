@@ -20,12 +20,12 @@ class EmailParser(Parser):
             if result:
                 for email in result:
                     if email[0] not in self.__email:
-                        self.__email.append(email[0])
-                        tmp_email.append(email[0])
+                        self.__email.append(str(email[0]))
+                        tmp_email.append(str(email[0]))
             elif tag.has_attr('href'):
                 href = str(tag.get('href'))
                 if href.find('mailto:') > -1:
-                    email_with_mailto = tag.get('href').strip('mailto:')
+                    email_with_mailto = href.strip('mailto:')
                     if email_with_mailto not in self.__email:
                         self.__email.append(email_with_mailto)
                         tmp_email.append(email_with_mailto)
