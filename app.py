@@ -54,4 +54,5 @@ class Console:
         }
 
 
-Console().parse_command()
+if __name__ == "__main__":
+    Console().parse_command()

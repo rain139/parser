@@ -21,4 +21,4 @@ class ParseWithBd:
                     set_result_parse(1)
             else:
                 exit('db rows 0')
-            exit()
+            exit('That\'s all')
