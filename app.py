@@ -41,7 +41,10 @@ class Console:
 
     def __commands_before_general(self):
         for _class in self.__classes_command['before']:
-            _class().run()
+            if 'run' in dir(_class):
+                _class().run()
+            else:
+                exit('Not exits method run')
 
     def __set_list_classes_command(self) -> None:
         self.__classes_command = {
