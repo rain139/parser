@@ -1,9 +1,6 @@
 from src.Parsers.EmailParser import EmailParser
-from src.services.db import db
 import sys
 from src.services.helpers import *
-
-sys.setrecursionlimit(100000)
 
 count = len(sys.argv)
 

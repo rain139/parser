@@ -24,8 +24,8 @@ class Parser(object):
         self._create_table()
         self.site_url = site_url.strip('/')
 
-        if kwargs.get('savve_link', False):
-            self._save_link = kwargs.get('savve_link', False)
+        if kwargs.get('save_link', False):
+            self._save_link = kwargs.get('save_link', False)
         if kwargs.get('special_link', False):
             self._special_link = kwargs.get('special_link', '').strip('/')
 
@@ -40,8 +40,7 @@ class Parser(object):
         except Exception:
             exit('\n \033[91m Error create table `{table}` \033[0m \n'.format(table=self._table))
 
-    def __open_href_and_set(self) -> None:
-        html = None
+    def __open_href_and_set(self) -> bool:
         try:
             if self.__url and self.__url_tmp:
                 html = urlopen(self.__url_tmp.pop())
@@ -49,9 +48,10 @@ class Parser(object):
                 html = urlopen(self.site_url)
         except:
             if self.__url_tmp:
-                self.__open_href_and_set()
+                return True
             else:
                 print('\033[91m Base url error!  \033[0m')
+                return False
 
         if html:
             soup = BeautifulSoup(html, features='html.parser')
@@ -89,7 +89,8 @@ class Parser(object):
             db().connect().commit()
 
         if self.__url_tmp:
-            self.__open_href_and_set()
+            return True
+        return False
 
     @abc.abstractmethod
     def _action(self, cursor, soup: BeautifulSoup) -> None:
@@ -97,6 +98,8 @@ class Parser(object):
         return
 
     def run(self) -> None:
-        self.__open_href_and_set()
-        print('Success Parsing!! `{table}`'.format(table=self._table))
+        while (True):
+            if not self.__open_href_and_set():
+                break
 
+        print('Success Parsing!! `{table}`'.format(table=self._table))
