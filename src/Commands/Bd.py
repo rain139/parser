@@ -1,13 +1,13 @@
 import sys
-from src.services.db import db
 from src.Parsers.EmailParser import EmailParser
+from src.Models.parse_site import *
 
 
 class ParseWithBd:
 
     def run(self):
         if len(sys.argv) > 1 and sys.argv[1].find('--bd') > -1:
-            result = self.__get_sites()
+            result = get_sites()
             if result:
                 for arg in result:
                     config = {}
@@ -16,24 +16,9 @@ class ParseWithBd:
                     try:
                         EmailParser(arg['site'], arg['tb'], **config).run()
                     except:
-                        print('Fail parse')
+                        set_result_parse(2)
                         continue
-                    self.__set_success_parse(arg['id'])
+                    set_result_parse(1)
             else:
                 exit('db rows 0')
             exit()
-
-    @staticmethod
-    def __get_sites() -> dict:
-        cursor = db().connect().cursor(dictionary=True)
-        cursor.execute('SELECT * FROM `parser_site` WHERE `parse` = 0')
-        result = cursor.fetchall()
-        cursor.close()
-        return result
-
-    @staticmethod
-    def __set_success_parse(id: int) -> None:
-        cursor = db().connect().cursor(dictionary=True)
-        cursor.execute('UPDATE `parser_site` SET `parse` = 1 WHERE `id` = %s', [id])
-        db().connect().commit()
-        cursor.close()
