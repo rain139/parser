@@ -13,12 +13,9 @@ class ParseWithBd:
                     config = {}
                     if arg['special_link']:
                         config['special_link'] = arg['special_link']
-                    try:
-                        EmailParser(arg['site'], arg['tb'], **config).run()
-                    except:
-                        set_result_parse(2)
-                        continue
-                    set_result_parse(1)
+                    set_process(arg['id'])
+                    EmailParser(arg['site'], arg['tb'], **config).run()
+                    set_result_parse(arg['id'])
             else:
                 exit('db rows 0')
             exit('That\'s all')

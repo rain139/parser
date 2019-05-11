@@ -19,8 +19,8 @@ def set_result_parse(id: int) -> None:
     cursor.close()
 
 
-def set_process(id: int) -> None:
+def set_process(id:int) -> None:
     cursor = db().connect().cursor(dictionary=True)
-    cursor.execute('UPDATE `parser_site` SET `process` = 1 WHERE `id` = %s', [id])
+    cursor.execute('UPDATE `parser_site` SET `process` = 1 WHERE `id` = %s',[id])
     db().connect().commit()
     cursor.close()
