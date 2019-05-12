@@ -103,3 +103,6 @@ class Parser(object):
                 break
 
         print('Success Parsing!! `{table}`'.format(table=self._table))
+
+    def get_count_links(self) -> int:
+        return self.__url.__len__()

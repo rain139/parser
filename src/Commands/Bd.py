@@ -11,11 +11,16 @@ class ParseWithBd:
             if result:
                 for arg in result:
                     config = {}
+
                     if arg['special_link']:
                         config['special_link'] = arg['special_link']
+
                     set_process(arg['id'])
-                    EmailParser(arg['site'], arg['tb'], **config).run()
-                    set_result_parse(arg['id'])
+
+                    parser = EmailParser(arg['site'], arg['tb'], **config)
+                    parser.run()
+
+                    set_result_parse(arg['id'], parser.get_count_links())
             else:
                 exit('db rows 0')
             exit('That\'s all')
