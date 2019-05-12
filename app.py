@@ -1,7 +1,7 @@
-from src.Parsers.EmailParser import EmailParser
+from parser.Parsers.EmailParser import EmailParser
 import sys
-from src.Commands.Bd import ParseWithBd
-from src.Services.Migration import Migration
+from parser.Commands.Bd import ParseWithBd
+from parser.Services.Migration import Migration
 
 
 class Console:

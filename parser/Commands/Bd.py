@@ -1,6 +1,6 @@
 import sys
-from src.Parsers.EmailParser import EmailParser
-from src.Services.Helpers import *
+from parser.Parsers.EmailParser import EmailParser
+from parser.Services.Helpers import *
 
 
 class ParseWithBd:

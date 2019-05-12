@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 import re
-from src.Services.Db import Db
+from parser.Services.Db import Db
 import abc
-from src.Services.Helpers import save_log
+from parser.Services.Helpers import save_log
 
 
 class Parser(object):

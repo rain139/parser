@@ -1,4 +1,4 @@
-from src.DomenParserAbstractFactory import Parser
+from parser.DomenParserAbstractFactory import Parser
 from bs4 import BeautifulSoup
 import re
 
