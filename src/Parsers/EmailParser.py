@@ -44,5 +44,5 @@ class EmailParser(Parser):
 
         try:
             cursor.execute(sql, emails)
-        except Exception:
-            print('\033[91m Error save sql: {sql} \033[0m'.format(count=emails.__len__(), sql=sql))
+        except Exception as e:
+            self._exception_handler(e,'\033[91m Error save sql: {sql} \033[0m'.format(count=emails.__len__(), sql=sql))

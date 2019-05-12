@@ -2,3 +2,5 @@
 .idea
 !/src/config/__init__.py
 /src/config/db_params.py
+!/src/log/.gitignore
+/src/log/*
