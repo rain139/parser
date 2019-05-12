@@ -1,3 +1,4 @@
 *.pyc
 .idea
-src/config/db_params.py
+!/src/config/__init__.py
+/src/config/db_params.py
