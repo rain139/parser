@@ -1,6 +1,6 @@
 *.pyc
 .idea
-!/Config/__init__.py
-/Config/db_params.py
+!/config/__init__.py
+/config/db_params.py
 !/log/.gitignore
 /log/*
