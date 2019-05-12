@@ -1,4 +1,5 @@
 import mysql.connector
+from parser.Services.Helpers import env
 
 
 class Db:
@@ -13,4 +14,5 @@ class Db:
 
     class __Mysql:
         def connect(self):
-            return mysql.connector.connect(host='localhost', database='parser', user='kek', password='some_pass')
+            return mysql.connector.connect(host=env('DB_HOST'), database=env('DB_DATABASE'), user=env('DB_USERNAME'),
+                                           password=env('DB_PASSWORD'))
