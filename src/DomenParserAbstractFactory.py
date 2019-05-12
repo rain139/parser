@@ -9,8 +9,6 @@ class Parser(object):
     __url = []
     __url_tmp = []
 
-    _save_link = False
-
     __metaclass__ = abc.ABCMeta
 
     site_url = None
@@ -24,8 +22,6 @@ class Parser(object):
         self._create_table()
         self.site_url = site_url.strip('/')
 
-        if kwargs.get('save_link', False):
-            self._save_link = kwargs.get('save_link', False)
         if kwargs.get('special_link', False):
             self._special_link = kwargs.get('special_link', '').strip('/')
 
@@ -46,7 +42,9 @@ class Parser(object):
                 html = urlopen(self.__url_tmp.pop())
             else:
                 html = urlopen(self.site_url)
-        except:
+        except Exception as e:
+            print(str(e))
+
             if self.__url_tmp:
                 return True
             else:
@@ -54,7 +52,15 @@ class Parser(object):
                 return False
 
         if html:
-            soup = BeautifulSoup(html, features='html.parser')
+            try:
+                soup = BeautifulSoup(html, features='html.parser')
+            except Exception as e:
+                print(str(e))
+                if self.__url_tmp:
+                    return True
+                else:
+                    return False
+
             if self._special_link:
                 all_tag_a = list(set(soup.findAll('a', href=re.compile("^(/{href}/)".format(href=self._special_link)))))
             else:
@@ -66,6 +72,7 @@ class Parser(object):
             cursor = db().connect().cursor()
 
             for tag in all_tag_a:
+
                 href = str(tag.get('href'))
 
                 if re.search('http|wwww', href) and href.find(self.site_url) == -1:
@@ -78,13 +85,9 @@ class Parser(object):
                         and not re.search('(jpg|png|pdf|gif|jpeg|svg|txt|#|None)', href, re.IGNORECASE):
                     self.__url.append(href)
                     self.__url_tmp.append(href)
+
                     self._action(cursor, soup)
 
-                    if self._save_link:
-                        try:
-                            cursor.execute("INSERT INTO `links` (`name`) VALUES (%s)", [href])
-                        except:
-                            print('Error insert links')
             cursor.close()
             db().connect().commit()
 
