@@ -34,12 +34,15 @@ class EmailParser(Parser):
     def __save_bd(self, emails: list, cursor) -> None:
         print("save {count} emails".format(count=emails.__len__()))
         sql = "INSERT INTO `{table}` (`email`) VALUES ".format(table=self._table)
+
         values = ''
+
         for _ in emails:
             values = '(%s),'
 
         sql += values.strip(',')
+
         try:
             cursor.execute(sql, emails)
-        except:
+        except Exception:
             print('\033[91m Error save sql: {sql} \033[0m'.format(count=emails.__len__(), sql=sql))
