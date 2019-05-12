@@ -30,7 +30,7 @@ def set_process(id: int) -> None:
 
 
 def save_log(e: Exception, site: str) -> None:
-    log_file = os.path.abspath('log/log.txt')
+    log_file = os.path.abspath('log.txt')
     with open(log_file, "a") as file:
         file.write("{name_site}   {date} :   {str} \n\n".format(name_site=site, date=str(datetime.datetime.now()),
                                                                 str=str(e)))
