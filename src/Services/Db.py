@@ -1,15 +1,15 @@
 import mysql.connector
 
 
-class db:
+class Db:
     __instance = None
 
     def __init__(self):
         if not self.__instance:
-            db.__instance = db.__Mysql().connect()
+            Db.__instance = Db.__Mysql().connect()
 
     def connect(self) -> mysql:
-        return db.__instance
+        return Db.__instance
 
     class __Mysql:
         def connect(self):

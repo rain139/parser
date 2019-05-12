@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 import re
-from src.services.db import db
+from src.Services.Db import Db
 import abc
-from src.Models.parse_site import save_log
+from src.Services.Helpers import save_log
 
 
 class Parser(object):
@@ -27,13 +27,13 @@ class Parser(object):
             self._special_link = kwargs.get('special_link', '').strip('/')
 
     def _create_table(self):
-        cursor = db().connect().cursor()
+        cursor = Db().connect().cursor()
         try:
             cursor.execute("CREATE TABLE IF NOT EXISTS  `{table}`"
                            "( `id` INT NOT NULL AUTO_INCREMENT ,"
                            " `email` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,"
                            " PRIMARY KEY (`id`)) ENGINE = InnoDB;".format(table=self._table))
-            db().connect().commit()
+            Db().connect().commit()
         except Exception as e:
             self._exception_handler(e)
             exit('\n \033[91m Error create table `{table}` \033[0m \n'.format(table=self._table))
@@ -62,7 +62,7 @@ class Parser(object):
             print('tmp_link = {tmp_link} all_link: {all_link}'.format(tmp_link=self.__url_tmp.__len__(),
                                                                       all_link=self.__url.__len__()))
 
-            cursor = db().connect().cursor()
+            cursor = Db().connect().cursor()
 
             for tag in all_tag_a:
 
@@ -82,7 +82,7 @@ class Parser(object):
                     self._action(cursor, soup)
 
             cursor.close()
-            db().connect().commit()
+            Db().connect().commit()
 
         if self.__url_tmp:
             return True

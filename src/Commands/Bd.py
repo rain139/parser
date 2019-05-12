@@ -1,6 +1,6 @@
 import sys
 from src.Parsers.EmailParser import EmailParser
-from src.Models.parse_site import *
+from src.Services.Helpers import *
 
 
 class ParseWithBd:

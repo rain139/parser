@@ -1,6 +1,7 @@
 from src.Parsers.EmailParser import EmailParser
 import sys
 from src.Commands.Bd import ParseWithBd
+from src.Services.Migration import Migration
 
 
 class Console:
@@ -58,4 +59,5 @@ class Console:
 
 
 if __name__ == "__main__":
+    Migration().run()
     Console().parse_command()
