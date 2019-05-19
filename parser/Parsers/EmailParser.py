@@ -10,7 +10,7 @@ class EmailParser(Parser):
         tmp_email = self.__search_email(soup.findAll())
         if tmp_email:
             self.__save_bd(tmp_email, cursor)
-        cursor.close()
+        # cursor.close()
 
     def __search_email(self, html: BeautifulSoup) -> list:
         tmp_email = []
