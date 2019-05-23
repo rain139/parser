@@ -2,7 +2,7 @@ from parser.Parsers.EmailParser import EmailParser
 import sys
 from parser.Commands.Bd import ParseWithBd
 from parser.Services.Migration import Migration
-from parser.Commands.BdMulti import ParseWithBdMulti
+from parser.Commands.BdMulti.BdMultiThreads import ParseWithBdMultiThreads
 
 
 class Console:
@@ -51,7 +51,7 @@ class Console:
     def __set_list_classes_command(self) -> None:
         self.__classes_command = {
             'before': [
-                ParseWithBdMulti,
+                ParseWithBdMultiThreads,
                 ParseWithBd,
             ],
             'general': [

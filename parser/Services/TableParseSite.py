@@ -8,7 +8,6 @@ def get_sites(one_row: bool = False) -> dict:
         result = cursor.fetchRow()
     else:
         result = cursor.fetchall()
-    cursor.close()
     return result
 
 
@@ -17,11 +16,10 @@ def set_result_parse(id: int, count_links: int) -> None:
     cursor.execute('UPDATE `parser_site` SET `parse` = 1,`process` = 0,`end` = NOW(),`links` = %s WHERE `id` = %s',
                    [count_links, id])
     Db().connect().commit()
-    cursor.close()
 
 
 def set_process(id: int) -> None:
     cursor = Db().connect().cursor()
     cursor.execute('UPDATE `parser_site` SET `process` = 1,`start` =  NOW() WHERE `id` = %s', [id])
     Db().connect().commit()
-    cursor.close()
+

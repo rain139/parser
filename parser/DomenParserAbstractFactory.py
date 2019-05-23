@@ -81,12 +81,9 @@ class Parser(object):
 
                     self._action(cursor, soup)
 
-                    try:
-                        cursor.execute("INSERT INTO `links` (`id`, `name`, `tables`) VALUES (NULL, %s, %s)", [href,self._table])
-                    except:
-                        print('Error insert links')
+                    cursor.execute("INSERT INTO `links` (`id`, `name`, `tables`) VALUES (NULL, %s, %s)",
+                                   [href, self._table])
 
-            cursor.close()
             Db().connect().commit()
 
         if self.__url_tmp:

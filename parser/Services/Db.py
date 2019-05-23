@@ -7,7 +7,7 @@ class Db:
 
     def __init__(self):
         if not self.__instance:
-            Db.__instance = Db.__Mysql().connect()
+            D_instance = Db.__Mysql().connect()
 
     def connect(self) -> mysql:
         return Db.__instance

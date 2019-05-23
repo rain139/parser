@@ -10,7 +10,6 @@ class EmailParser(Parser):
         tmp_email = self.__search_email(soup.findAll())
         if tmp_email:
             self.__save_bd(tmp_email, cursor)
-        # cursor.close()
 
     def __search_email(self, html: BeautifulSoup) -> list:
         tmp_email = []
@@ -45,4 +44,4 @@ class EmailParser(Parser):
         try:
             cursor.execute(sql, emails)
         except Exception as e:
-            self._exception_handler(e,'\033[91m Error save sql: {sql} \033[0m'.format(count=emails.__len__(), sql=sql))
+            self._exception_handler(e,'\033[91m Error save sql: {sql} {emails} \033[0m'.format(count=emails.__len__(), sql=sql,emails=emails))
