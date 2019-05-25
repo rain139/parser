@@ -31,7 +31,7 @@ class ParseWithBdMultiThreads:
     def __create_command(arg: dict) -> str:
         path_venv_python = os.path.dirname(__file__) + '/../../venv/bin/activate'
         path_app = os.path.dirname(__file__) + '/../../app.py'
-        command = 'source {venv_path} && python3 {app_path} {link} {table} id_log={id_log}'.format(link=arg['site'],
+        command = '/usr/bin/source {venv_path} && /usr/bin/python3 {app_path} {link} {table} id_log={id_log}'.format(link=arg['site'],
                                                                                  venv_path=path_venv_python,
                                                                                  app_path=path_app,
                                                                                  table=arg['tb'],
