@@ -4,7 +4,7 @@ import re
 from parser.Services.Db import Db
 import abc
 from parser.Services.Helpers import save_log
-from parser.Services.TableParseSite import save_count_links
+from parser.Services.TableParseSite import save_count_links, create_log
 
 
 class Parser(object):
@@ -15,12 +15,12 @@ class Parser(object):
 
     _site_url = None
 
-    _special_link = ''
+    _special_link = None
 
     _table = None
 
     # Перемінна де йде запис кожних 50 тис лінків для їх зберігання в бд
-    __limit_save_count_link = 50000
+    __limit_save_count_link = 10
 
     def __init__(self, site_url: str, table: str, **kwargs):
         self._table = table
@@ -29,6 +29,8 @@ class Parser(object):
 
         if kwargs.get('special_link', False):
             self._special_link = kwargs.get('special_link', '').strip('/')
+
+        create_log(self._site_url, table, self._special_link)
 
     def _create_table(self):
         cursor = Db().connect().cursor()
@@ -96,8 +98,8 @@ class Parser(object):
     # Зберігти кожні 50000 лінків в бд
     def __save_count_url_to_bd(self):
         if self.__url.__len__() > self.__limit_save_count_link:
-            self.__limit_save_count_link += 50000
-            save_count_links(self._table, self.__url.__len__())
+            self.__limit_save_count_link += 10
+            save_count_links(self._table, self.__url.__len__(),self.__url_tmp.__len__())
 
     @abc.abstractmethod
     def _action(self, cursor, soup: BeautifulSoup) -> None:
