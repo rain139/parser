@@ -24,7 +24,7 @@ class Parser(object):
     _id_log = None
 
     # Перемінна де йде запис кожних n тис лінків для їх зберігання в бд
-    __COUNT_LINK_TO_SAVE = 50
+    __COUNT_LINK_TO_SAVE = 1000
 
     def __init__(self, site_url: str, table: str, **kwargs):
         self._table = table
