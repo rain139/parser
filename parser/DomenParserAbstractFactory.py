@@ -20,7 +20,7 @@ class Parser(object):
     _table = None
 
     # Перемінна де йде запис кожних 50 тис лінків для їх зберігання в бд
-    __limit_save_count_link = 10
+    __limit_save_count_link = 50000
 
     def __init__(self, site_url: str, table: str, **kwargs):
         self._table = table
@@ -96,7 +96,7 @@ class Parser(object):
     # Зберігти кожні 50000 лінків в бд
     def __save_count_url_to_bd(self):
         if self.__url.__len__() > self.__limit_save_count_link:
-            self.__limit_save_count_link += 10
+            self.__limit_save_count_link += 50000
             save_count_links(self._table, self.__url.__len__())
 
     @abc.abstractmethod
