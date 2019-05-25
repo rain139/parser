@@ -1,36 +1,43 @@
 import sys
 from parser.Services.TableParseSite import *
 from parser.Parsers.EmailParser import EmailParser
-import threading
+import subprocess
+import shlex
+import os
 
 
 class ParseWithBdMultiThreads:
 
-    def run(self):
+    def run(self) -> None:
         if len(sys.argv) > 1 and sys.argv[1].find('--bdm') > -1:
+
             result = get_sites()
+
             if result:
-
                 for key, arg in enumerate(result):
-                    print(arg['site'])
-                    t = threading.Thread(target=self.__run_parser_site, args=(arg,))
-                    t.start()
-
+                    set_process(arg['id'])
+                    self.__run_parser_site(self.__create_command(arg))
             else:
                 exit('db rows 0')
 
             exit('Run all')
 
     @staticmethod
-    def __run_parser_site(arg):
-        config = {'id_log':  arg['id']}
+    def __run_parser_site(command: str) -> None:
+        cmd = shlex.split(command)
+        subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        print('Run')
-        set_process(arg['id'])
-        # if arg['special_link']:
-        #     config['special_link'] = arg['special_link']
-        #
-        # parser = EmailParser(arg['site'], arg['tb'], **config)
-        # parser.run()
-        #
-        # set_result_parse(arg['id'], parser.get_count_links())
+    @staticmethod
+    def __create_command(arg: dict) -> str:
+        path_venv_python = os.path.abspath('venv/bin/python3.5')
+        path_app = os.path.abspath('app.py')
+        command = '{venv_path} {app_path} {link} {table} id_log={id_log}'.format(link=arg['site'],
+                                                                                 venv_path=path_venv_python,
+                                                                                 app_path=path_app,
+                                                                                 table=arg['tb'],
+                                                                                 id_log=arg['id'],
+                                                                                 )
+        if arg['special_link']:
+            command += ' special_link=' + arg['special_link']
+        print(command)
+        return command

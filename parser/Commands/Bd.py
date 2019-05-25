@@ -20,7 +20,6 @@ class ParseWithBd:
                     parser = EmailParser(arg['site'], arg['tb'], **config)
                     parser.run()
 
-                    set_result_parse(arg['id'], parser.get_count_links())
             else:
                 exit('db rows 0')
             exit('That\'s all')

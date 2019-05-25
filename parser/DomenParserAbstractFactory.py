@@ -56,8 +56,11 @@ class Parser(object):
             if self.__url and self.__url_tmp:
                 url_open_now = self.__url_tmp.pop()
                 return urlopen(url_open_now)
+            elif self._special_link:
+                return urlopen(self._site_url + '/' + self._special_link)
             else:
                 return urlopen(self._site_url)
+
         except Exception as e:
             if 'url_open_now' in locals():
                 error_url = '\033[91m url error {url}!  \033[0m'.format(url=url_open_now)
@@ -78,7 +81,7 @@ class Parser(object):
             try:
                 soup = BeautifulSoup(html, features='html.parser')
             except Exception as e:
-                return self._exception_handler(e, '\033[91m url error {url}!  \033[0m'.format(url=url_open_now))
+                return self._exception_handler(e, '\033[91m html error parse  \033[0m')
 
             if self._special_link:
                 all_tag_a = list(set(soup.findAll('a', href=re.compile("^(/{href}/)".format(href=self._special_link)))))
