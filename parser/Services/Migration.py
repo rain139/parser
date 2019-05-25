@@ -10,23 +10,24 @@ class Migration:
         self.__set_last_key_migration()
         self.__set_sql_migration()
 
-    def __create_settings_table(self):
+    def __create_settings_table(self) -> None:
         cursor = Db().connect().cursor()
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS `settings` ( `id`  VARCHAR(255) NOT NULL , `data` TEXT NULL DEFAULT NULL , UNIQUE (`id`)) ENGINE = InnoDB;")
         Db().connect().commit()
         cursor.close()
 
-    def __set_last_key_migration(self):
+    def __set_last_key_migration(self) -> None:
         cursor = Db().connect().cursor(dictionary=True)
-        cursor.execute("SELECT `data` FROM `settings` WHERE `id` = 'migrations'");
-        result = cursor.fetchRow()
+        cursor.execute("SELECT `data` FROM `settings` WHERE `id` = 'migrations'")
+        result = cursor.fetchall()
+
         if result:
-            self.__last_key_migration = result['data']
+            self.__last_key_migration = result[0]['data']
         else:
-           pass
+            cursor.execute("INSERT INTO `settings` (`id`, `data`) VALUES ('migrations', '0')")
+            Db().connect().commit()
         cursor.close()
-        exit()
 
     def __set_sql_migration(self):
         self.__sql_migration = [
@@ -35,10 +36,20 @@ class Migration:
             "ALTER TABLE `parser_site` ADD `tmp_links` INT(11) NOT NULL DEFAULT '0' AFTER `links`;",
         ]
 
-    def run(self):
+    def __update_last_key_migration(self, key: int) -> None:
+        cursor = Db().connect().cursor()
+        cursor.execute("UPDATE `settings` SET `data` = %s WHERE `id` = 'migrations'", [key])
+        Db().connect().commit()
+        cursor.close()
+
+    def run(self) -> None:
         if self.__sql_migration:
-            cursor = Db().connect().cursor()
-            for key, migration in enumerate(self.__sql_migration):
-                cursor.execute(migration)
-            Db().connect().commit()
-            cursor.close()
+            if self.__sql_migration:
+                cursor = Db().connect().cursor()
+                last_key = 0
+                for key, migration in enumerate(self.__sql_migration):
+                    cursor.execute(migration)
+                    last_key = key
+                Db().connect().commit()
+                cursor.close()
+                self.__update_last_key_migration(last_key)
