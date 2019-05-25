@@ -34,7 +34,10 @@ class Parser(object):
         if kwargs.get('special_link', False):
             self._special_link = kwargs.get('special_link', '').strip('/')
 
-        self._id_log = create_log(self._site_url, table, self._special_link)
+        if kwargs.get('id_log', False):
+            self._id_log = kwargs.get('id_log', 0)
+        else:
+            self._id_log = create_log(self._site_url, table, self._special_link)
 
     def _create_table(self):
         cursor = Db().connect().cursor()

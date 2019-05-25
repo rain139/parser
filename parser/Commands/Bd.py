@@ -10,7 +10,7 @@ class ParseWithBd:
             result = get_sites()
             if result:
                 for arg in result:
-                    config = {}
+                    config = {'id_log': arg['id']}
 
                     if arg['special_link']:
                         config['special_link'] = arg['special_link']

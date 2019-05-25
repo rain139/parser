@@ -2,7 +2,7 @@ from parser.Parsers.EmailParser import EmailParser
 import sys
 from parser.Commands.Bd import ParseWithBd
 from parser.Services.Migration import Migration
-from parser.Commands.BdMulti.BdMultiThreads import ParseWithBdMultiThreads
+from parser.Commands.BdMultiThreads import ParseWithBdMultiThreads
 
 
 class Console:

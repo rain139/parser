@@ -23,7 +23,7 @@ class ParseWithBdMultiThreads:
 
     @staticmethod
     def __run_parser_site(arg):
-        config = {}
+        config = {'id_log':  arg['id']}
 
         print('Run')
         set_process(arg['id'])
