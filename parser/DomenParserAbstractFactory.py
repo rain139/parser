@@ -48,21 +48,34 @@ class Parser(object):
             self._exception_handler(e)
             exit('\n \033[91m Error create table `{table}` \033[0m \n'.format(table=self._table))
 
-    def __open_href_and_set(self) -> bool:
+    def __open_url(self):
         try:
             if self.__url and self.__url_tmp:
-                html = urlopen(self.__url_tmp.pop())
+                url_open_now = self.__url_tmp.pop()
+                return urlopen(url_open_now)
             else:
-                html = urlopen(self._site_url)
+                return urlopen(self._site_url)
         except Exception as e:
-            return self._exception_handler(e, '\033[91m Base url error!  \033[0m')
+            if 'url_open_now' in locals():
+                error_url = '\033[91m url error {url}!  \033[0m'.format(url=url_open_now)
+            else:
+                error_url = '\033[91m url error {url}!  \033[0m'.format(url=self._site_url)
+
+            return self._exception_handler(e, error_url)
+
+    def __open_href_and_set(self) -> bool:
+
+        html = self.__open_url()
+
+        if type(html) is bool:
+            return html
 
         if html:
 
             try:
                 soup = BeautifulSoup(html, features='html.parser')
             except Exception as e:
-                return self._exception_handler(e)
+                return self._exception_handler(e, '\033[91m url error {url}!  \033[0m'.format(url=url_open_now))
 
             if self._special_link:
                 all_tag_a = list(set(soup.findAll('a', href=re.compile("^(/{href}/)".format(href=self._special_link)))))
@@ -128,7 +141,7 @@ class Parser(object):
         if text:
             print(text)
 
-        save_log(e, self._site_url)
+        save_log(e, self._site_url + ' ' + text)
 
         if self.__url_tmp:
             return True
