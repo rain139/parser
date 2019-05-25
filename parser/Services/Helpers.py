@@ -4,7 +4,7 @@ from environs import Env, EnvError
 
 
 def save_log(e: Exception, site: str) -> None:
-    log_file = os.path.abspath('log.txt')
+    log_file = os.path.dirname(__file__) + '/../log.txt'
     with open(log_file, "a") as file:
         file.write("{name_site}   {date} :   {str} \n\n".format(name_site=site, date=str(datetime.datetime.now()),
                                                                 str=str(e)))
