@@ -37,7 +37,7 @@ class EmailParser(Parser):
         values = ''
 
         for _ in emails:
-            values = '(%s),'
+            values += '(%s),'
 
         sql += values.strip(',')
 
