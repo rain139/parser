@@ -52,4 +52,5 @@ class Migration:
 
                 Db().connect().commit()
                 cursor.close()
-                self.__update_last_key_migration(last_key)
+                if last_key+1 > self.__last_key_migration:
+                    self.__update_last_key_migration(last_key)

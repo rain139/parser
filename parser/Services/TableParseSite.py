@@ -20,10 +20,10 @@ def set_result_parse(id: int, count_links: int) -> None:
     cursor.close()
 
 
-def save_count_links(table: str, count_links: int,count_tmp_links: int) -> None:
+def save_count_links(id: int, count_links: int, count_tmp_links: int) -> None:
     cursor = Db().connect().cursor()
-    cursor.execute('UPDATE `parser_site` SET `links` = %s,`tmp_links` = %s WHERE `tb` = %s',
-                   [count_links,count_tmp_links, table])
+    cursor.execute('UPDATE `parser_site` SET `links` = %s,`tmp_links` = %s WHERE `id` = %s',
+                   [count_links, count_tmp_links, id])
     Db().connect().commit()
     cursor.close()
 
@@ -34,11 +34,12 @@ def set_process(id: int) -> None:
     Db().connect().commit()
 
 
-def create_log(link: str, table: str, special_links: str = None):
+def create_log(link: str, table: str, special_links: str = None) -> int:
     cursor = Db().connect().cursor()
     cursor.execute(
         "INSERT INTO `parser_site` (`id`, `site`, `tb`, `special_link`, `parse`, `process`, `links`, `tmp_links`, `start`, `end`) VALUES (NULL, %s,%s, %s, '0', '1', '0', '0',  NOW(), NULL)",
         [link, table, special_links])
     Db().connect().commit()
+    id = cursor.lastrowid
     cursor.close()
-
+    return id

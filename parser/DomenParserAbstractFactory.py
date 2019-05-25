@@ -4,7 +4,7 @@ import re
 from parser.Services.Db import Db
 import abc
 from parser.Services.Helpers import save_log
-from parser.Services.TableParseSite import save_count_links, create_log
+from parser.Services.TableParseSite import *
 
 
 class Parser(object):
@@ -19,8 +19,12 @@ class Parser(object):
 
     _table = None
 
-    # Перемінна де йде запис кожних 50 тис лінків для їх зберігання в бд
-    __limit_save_count_link = 10
+    __limit_save_count_link = 0
+
+    _id_log = None
+
+    # Перемінна де йде запис кожних n тис лінків для їх зберігання в бд
+    __COUNT_LINK_TO_SAVE = 50
 
     def __init__(self, site_url: str, table: str, **kwargs):
         self._table = table
@@ -30,7 +34,7 @@ class Parser(object):
         if kwargs.get('special_link', False):
             self._special_link = kwargs.get('special_link', '').strip('/')
 
-        create_log(self._site_url, table, self._special_link)
+        self._id_log = create_log(self._site_url, table, self._special_link)
 
     def _create_table(self):
         cursor = Db().connect().cursor()
@@ -95,11 +99,14 @@ class Parser(object):
             return True
         return False
 
-    # Зберігти кожні 50000 лінків в бд
+    # Зберігти кожні n лінків в бд
     def __save_count_url_to_bd(self):
-        if self.__url.__len__() > self.__limit_save_count_link:
-            self.__limit_save_count_link += 10
-            save_count_links(self._table, self.__url.__len__(),self.__url_tmp.__len__())
+        count_links = self.get_count_links()
+        count_tmp_links = self.__url_tmp.__len__()
+        if (count_links > self.__limit_save_count_link and count_links > self.__COUNT_LINK_TO_SAVE) \
+                or (count_tmp_links > self.__limit_save_count_link):
+            self.__limit_save_count_link += self.__COUNT_LINK_TO_SAVE
+            save_count_links(self._id_log, count_links, count_tmp_links)
 
     @abc.abstractmethod
     def _action(self, cursor, soup: BeautifulSoup) -> None:
@@ -112,6 +119,7 @@ class Parser(object):
                 break
 
         print('Success Parsing!! `{table}`'.format(table=self._table))
+        set_result_parse(self._id_log, self.__url.__len__())
 
     def get_count_links(self) -> int:
         return self.__url.__len__()
