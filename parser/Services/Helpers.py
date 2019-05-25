@@ -11,10 +11,13 @@ def save_log(e: Exception, site: str) -> None:
         file.close()
 
 
-def env(key: str) -> str:
+def env(key: str, default: str = None) -> str:
     env = Env()
     env.read_env()
     try:
         return env(key)
     except EnvError:
-        exit('Not find {key} in .env'.format(key=key))
+        if default:
+            return default
+        else:
+            exit('Not find {key} in .env'.format(key=key))
