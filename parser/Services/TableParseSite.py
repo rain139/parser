@@ -18,8 +18,14 @@ def set_result_parse(id: int, count_links: int) -> None:
     Db().connect().commit()
 
 
+def save_count_links(table: str, count_links: int) -> None:
+    cursor = Db().connect().cursor()
+    cursor.execute('UPDATE `parser_site` SET `links` = %s WHERE `table` = %s',
+                   [count_links, table])
+    Db().connect().commit()
+
+
 def set_process(id: int) -> None:
     cursor = Db().connect().cursor()
     cursor.execute('UPDATE `parser_site` SET `process` = 1,`start` =  NOW() WHERE `id` = %s', [id])
     Db().connect().commit()
-
