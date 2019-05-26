@@ -15,7 +15,7 @@ class EmailParser(Parser):
         tmp_email = []
 
         for tag in html:
-            result = re.findall('([A-Za-z0-9\._-]+@[A-Za-z]+\.(com|ukr|edu|net|ua))+', tag.text)
+            result = re.findall('([A-Za-z0-9\._-]+@[A-Za-z]+\.(com|ukr|edu|net|ua|ru))+', tag.text)
             if result:
                 for email in result:
                     if email[0] not in self.__email:
