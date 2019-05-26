@@ -1,4 +1,4 @@
-from parser.DomenParserAbstractFactory import Parser
+from parser.UrlParserAbstractFactory import Parser
 from bs4 import BeautifulSoup
 import re
 
@@ -44,4 +44,6 @@ class EmailParser(Parser):
         try:
             cursor.execute(sql, emails)
         except Exception as e:
-            self._handler_exception(e,'\033[91m Error save sql: {sql} {emails} \033[0m'.format(count=emails.__len__(), sql=sql,emails=emails))
+            self._handler_exception(e, '\033[91m Error save sql: {sql} {emails} \033[0m'.format(count=emails.__len__(),
+                                                                                                sql=sql,
+                                                                                                emails=emails))
