@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
 import re
-from parser.Services.Db import Db
 import abc
 from parser.Services.Helpers import save_log
 from parser.Services.TableParseSite import *

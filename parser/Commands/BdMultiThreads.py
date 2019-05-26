@@ -1,6 +1,5 @@
 import sys
 from parser.Services.TableParseSite import *
-from parser.Parsers.EmailParser import EmailParser
 import subprocess
 import shlex
 import os
