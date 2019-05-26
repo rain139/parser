@@ -8,36 +8,35 @@ from parser.Services.TableParseSite import *
 
 
 class Parser(object):
-    __url = []
-    __url_tmp = []
+    __urls = []
+    __urls_tmp = []
 
     __metaclass__ = abc.ABCMeta
 
-    _site_url = None
+    _site_url_home = None
 
     _special_link = None
 
     _table = None
 
-    __limit_save_count_link = 0
-
     _id_log = None
 
-    # Перемінна де йде запис кожних n тис лінків для їх зберігання в бд
     __count_request = 0
 
     def __init__(self, site_url: str, table: str, **kwargs):
         self._table = table
         self._create_table()
-        self._site_url = site_url.strip('/')
+        self._site_url_home = site_url.strip('/')
+        self.__set_other_arguments(kwargs)
 
+    def __set_other_arguments(self, kwargs: dict):
         if kwargs.get('special_link', False):
             self._special_link = kwargs.get('special_link', '').strip('/')
 
         if kwargs.get('id_log', False):
             self._id_log = kwargs.get('id_log', 0)
         else:
-            self._id_log = create_log(self._site_url, table, self._special_link)
+            self._id_log = create_log(self._site_url_home, self._table, self._special_link)
 
     def _create_table(self):
         cursor = Db().connect().cursor()
@@ -48,48 +47,50 @@ class Parser(object):
                            " PRIMARY KEY (`id`)) ENGINE = InnoDB;".format(table=self._table))
             Db().connect().commit()
         except Exception as e:
-            self._exception_handler(e)
+            self._handler_exception(e)
             exit('\n \033[91m Error create table `{table}` \033[0m \n'.format(table=self._table))
 
     def __open_url(self):
+        url = None
         try:
-            if self.__url and self.__url_tmp:
-                url_open_now = self.__url_tmp.pop()
-                return urlopen(url_open_now)
+            if self.__urls and self.__urls_tmp:
+                url = self.__urls_tmp.pop()
+                return urlopen(url)
             elif self._special_link:
-                return urlopen(self._site_url + '/' + self._special_link)
+                return urlopen(self._site_url_home + '/' + self._special_link)
             else:
-                return urlopen(self._site_url)
+                return urlopen(self._site_url_home)
 
         except Exception as e:
-            if 'url_open_now' in locals():
-                error_url = '\033[91m url error {url}!  \033[0m'.format(url=url_open_now)
+            if url:
+                error_url = '\033[91m url error {url}!  \033[0m'.format(url=url)
             else:
-                error_url = '\033[91m url error {url}!  \033[0m'.format(url=self._site_url)
+                error_url = '\033[91m url error {url}!  \033[0m'.format(url=self._site_url_home)
 
-            return self._exception_handler(e, error_url)
+            return self._handler_exception(e, error_url)
 
-    def __open_href_and_set(self) -> bool:
+    def __get_all_tag_a(self, soup: BeautifulSoup) -> list:
 
-        html = self.__open_url()
+        if self._special_link:
+            return list(set(soup.findAll('a', href=re.compile("^(/{href}/)".format(href=self._special_link)))))
+        else:
+            return list(set(soup.findAll('a')))
+
+    def __handler_html(self, html) -> bool:
 
         if type(html) is bool:
             return html
 
         if html:
-
             try:
                 soup = BeautifulSoup(html, features='html.parser')
             except Exception as e:
-                return self._exception_handler(e, '\033[91m html error parse  \033[0m')
+                return self._handler_exception(e, '\033[91m html error parse  \033[0m')
 
-            if self._special_link:
-                all_tag_a = list(set(soup.findAll('a', href=re.compile("^(/{href}/)".format(href=self._special_link)))))
-            else:
-                all_tag_a = list(set(soup.findAll('a')))
+            all_tag_a = self.__get_all_tag_a(soup)
 
-            print('tmp_link = {tmp_link} all_link: {all_link}'.format(tmp_link=self.__url_tmp.__len__(),
-                                                                      all_link=self.__url.__len__()))
+            print('tmp_link = {tmp_link} all_link: {all_link}'.format(tmp_link=self.__urls_tmp.__len__(),
+                                                                      all_link=self.__urls.__len__()))
 
             cursor = Db().connect().cursor()
 
@@ -97,24 +98,24 @@ class Parser(object):
 
                 href = str(tag.get('href'))
 
-                if re.search('http|wwww', href) and href.find(self._site_url) == -1:
+                if re.search('http|wwww', href) and href.find(self._site_url_home) == -1:
                     continue
 
-                if href.find(self._site_url) == -1:
-                    href = self._site_url + '/' + href.strip('/')
+                if href.find(self._site_url_home) == -1:
+                    href = self._site_url_home + '/' + href.strip('/')
 
-                if href not in self.__url and href != '/' \
+                if href not in self.__urls and href != '/' \
                         and not re.search('(jpg|png|pdf|gif|jpeg|svg|txt|#|None)', href, re.IGNORECASE):
-                    self.__url.append(href)
-                    self.__url_tmp.append(href)
-
+                    self.__urls.append(href)
+                    self.__urls_tmp.append(href)
+                    # For Abstract Fabric
                     self._action(cursor, soup)
 
             self.__save_count_url_to_bd()
 
             Db().connect().commit()
 
-        if self.__url_tmp:
+        if self.__urls_tmp:
             return True
         return False
 
@@ -123,7 +124,7 @@ class Parser(object):
         self.__count_request += 1
         if self.__count_request % 100 == 0:
             count_links = self.get_count_links()
-            count_tmp_links = self.__url_tmp.__len__()
+            count_tmp_links = self.__urls_tmp.__len__()
             save_count_links(self._id_log, count_links, count_tmp_links)
 
     @abc.abstractmethod
@@ -133,22 +134,22 @@ class Parser(object):
 
     def run(self) -> None:
         while (True):
-            if not self.__open_href_and_set():
+            if not self.__handler_html(self.__open_url()):
                 break
 
         print('Success Parsing!! `{table}`'.format(table=self._table))
-        set_result_parse(self._id_log, self.__url.__len__())
+        set_result_parse(self._id_log, self.__urls.__len__())
 
     def get_count_links(self) -> int:
-        return self.__url.__len__()
+        return self.__urls.__len__()
 
-    def _exception_handler(self, e: Exception, text: str = None) -> bool:
+    def _handler_exception(self, e: Exception, text: str = None) -> bool:
         if text:
             print(text)
 
-        save_log(e, self._site_url + ' ' + text)
+        save_log(e, self._site_url_home + ' ' + text)
 
-        if self.__url_tmp:
+        if self.__urls_tmp:
             return True
         else:
             return False
