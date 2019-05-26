@@ -5,9 +5,10 @@ import subprocess
 import shlex
 import os
 from parser.Services.Helpers import env
+from parser.Commands.CommandAbstract import Command
 
 
-class ParseWithBdMultiThreads:
+class ParseWithBdMultiThreads(Command):
 
     def run(self) -> None:
         if len(sys.argv) > 1 and sys.argv[1].find('--bdm') > -1:

@@ -1,9 +1,10 @@
 import sys
 from parser.Parsers.EmailParser import EmailParser
 from parser.Services.TableParseSite import *
+from parser.Commands.CommandAbstract import Command
 
 
-class ParseWithBd:
+class ParseWithBd(Command):
 
     def run(self):
         if len(sys.argv) > 1 and sys.argv[1].find('--bd') > -1:
