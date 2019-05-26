@@ -24,7 +24,7 @@ class Parser(object):
     _id_log = None
 
     # Перемінна де йде запис кожних n тис лінків для їх зберігання в бд
-    __COUNT_LINK_TO_SAVE = 1000
+    __count_request = 0
 
     def __init__(self, site_url: str, table: str, **kwargs):
         self._table = table
@@ -120,11 +120,10 @@ class Parser(object):
 
     # Зберігти кожні n лінків в бд
     def __save_count_url_to_bd(self):
-        count_links = self.get_count_links()
-        count_tmp_links = self.__url_tmp.__len__()
-        if (count_links > self.__limit_save_count_link and count_links > self.__COUNT_LINK_TO_SAVE) \
-                or (count_tmp_links > self.__limit_save_count_link):
-            self.__limit_save_count_link += self.__COUNT_LINK_TO_SAVE
+        self.__count_request += 1
+        if self.__count_request % 100 == 0:
+            count_links = self.get_count_links()
+            count_tmp_links = self.__url_tmp.__len__()
             save_count_links(self._id_log, count_links, count_tmp_links)
 
     @abc.abstractmethod
