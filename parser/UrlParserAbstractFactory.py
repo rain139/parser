@@ -147,7 +147,6 @@ class Parser(object):
     def _handler_exception(self, e: Exception, text: str = None) -> bool:
         if text:
             print(text)
-        Telegram(self._site_url_home).error(text)
         save_log(e, self._site_url_home + ' ' + text)
 
         if self.__urls_tmp:
