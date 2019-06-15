@@ -4,6 +4,7 @@ import re
 import abc
 from parser.Services.Helpers import save_log
 from parser.Services.TableParseSite import *
+from parser.Services.Telegram import Telegram
 
 
 class Parser(object):
@@ -136,6 +137,7 @@ class Parser(object):
             if not self.__handler_html(self.__open_url()):
                 break
 
+        Telegram(self._site_url_home).success()
         print('Success Parsing!! `{table}`'.format(table=self._table))
         set_result_parse(self._id_log, self.__urls.__len__())
 
@@ -145,7 +147,7 @@ class Parser(object):
     def _handler_exception(self, e: Exception, text: str = None) -> bool:
         if text:
             print(text)
-
+        Telegram(self._site_url_home).error(text)
         save_log(e, self._site_url_home + ' ' + text)
 
         if self.__urls_tmp:
